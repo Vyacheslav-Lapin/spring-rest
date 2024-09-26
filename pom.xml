@@ -15,6 +15,7 @@
 
   <properties>
     <java.version>21</java.version>
+    <!--suppress XmlUnresolvedReference -->
     <revision>${git-versioner.version}</revision>
     <spring-boot.version>3.3.4</spring-boot.version>
 
