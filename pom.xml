@@ -25,12 +25,12 @@
     <spotbugs.version>4.8.6</spotbugs.version>
     <error_prone_annotations.version>2.32.0</error_prone_annotations.version>
 
+    <maven.sourceDirectory>${project.basedir}/src/main/java</maven.sourceDirectory>
     <maven.compiler.forceJavacCompilerUse>true</maven.compiler.forceJavacCompilerUse>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
     <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
     <versions-maven-plugin.version>2.17.1</versions-maven-plugin.version>
-    <maven.sourceDirectory>src/main/java</maven.sourceDirectory>
   </properties>
 
   <dependencies>
@@ -55,6 +55,10 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.springframework.boot</groupId>-->
+<!--      <artifactId>spring-boot-docker-compose</artifactId>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
@@ -148,7 +152,6 @@
 
   <build>
     <defaultGoal>clean verify</defaultGoal>
-    <!--suppress MybatisXMapperXmlInspection, MavenModelInspection -->
     <sourceDirectory>${maven.sourceDirectory}</sourceDirectory>
 
     <pluginManagement>
