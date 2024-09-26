@@ -30,6 +30,7 @@
     <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
     <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
     <versions-maven-plugin.version>2.17.1</versions-maven-plugin.version>
+    <maven.sourceDirectory>src/main/java</maven.sourceDirectory>
   </properties>
 
   <dependencies>
@@ -147,6 +148,9 @@
 
   <build>
     <defaultGoal>clean verify</defaultGoal>
+    <!--suppress MybatisXMapperXmlInspection, MavenModelInspection -->
+    <sourceDirectory>${maven.sourceDirectory}</sourceDirectory>
+
     <pluginManagement>
       <plugins>
         <plugin>
@@ -221,6 +225,135 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>build</id>
+      <properties>
+        <lombok.sourceDirectory>${project.basedir}/src/main/java</lombok.sourceDirectory>
+        <lombok.testSourceDirectory>${project.basedir}/src/test/java</lombok.testSourceDirectory>
+        <lombok.outputDirectory>${project.build.directory}/generated-sources/delomboked</lombok.outputDirectory>
+        <lombok.testOutputDirectory>${project.build.directory}/generated-test-sources/delomboked</lombok.testOutputDirectory>
+        <maven.sourceDirectory>${lombok.outputDirectory}</maven.sourceDirectory>
+      </properties>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <artifactId>maven-source-plugin</artifactId>
+              <version>${maven-source-plugin.version}</version>
+              <executions>
+                <execution>
+                  <id>attach-sources</id>
+                  <!--<phase>package</phase>&lt;!&ndash;default&ndash;&gt;-->
+                  <goals>
+                    <goal>jar</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+            <plugin>
+              <artifactId>maven-antrun-plugin</artifactId>
+              <version>${maven-antrun-plugin.version}</version>
+              <executions>
+                <execution>
+                  <id>delombok-sources:process-sources:run</id>
+                  <phase>process-sources</phase>
+                  <goals>
+                    <goal>run</goal>
+                  </goals>
+                  <configuration>
+                    <target name="delombok-sources">
+                      <property name="maven.classpath" refid="maven.compile.classpath"/>
+                      <mkdir dir="${lombok.outputDirectory}"/>
+
+                      <!--<taskdef classname="lombok.delombok.ant.Tasks$Delombok"-->
+                      <!--         classpath="${maven.classpath}"-->
+                      <!--         name="delombok"/>-->
+                      <!--<delombok encoding="${project.build.sourceEncoding}"-->
+                      <!--          to="${lombok.outputDirectory}"-->
+                      <!--          from="src">-->
+                      <!--  <format value="indent:2"/>-->
+                      <!--  <format value="finalParams:skip"/>-->
+                      <!--  <format value="pretty"/>-->
+                      <!--</delombok>-->
+
+                      <java classname="lombok.launch.Main" fork="true">
+                        <classpath>
+                          <!--suppress MavenModelInspection, MybatisXMapperXmlInspection -->
+                          <pathelement path="${maven.classpath}"/>
+                        </classpath>
+
+                        <arg value="delombok"/>
+                        <arg value="${lombok.sourceDirectory}"/>
+                        <!-- @formatter:off -->
+                        <arg value="-f"/><arg value="indent:2"/>
+                        <arg value="-f"/><arg value="finalParams:skip"/>
+                        <arg value="-f"/><arg value="pretty"/>
+                        <arg value="-d"/><arg value="${lombok.outputDirectory}"/>
+                        <!-- @formatter:on -->
+                      </java>
+                    </target>
+                  </configuration>
+                </execution>
+                <execution>
+                  <id>delombok-test-sources:process-test-sources:run</id>
+                  <phase>process-test-sources</phase>
+                  <goals>
+                    <goal>run</goal>
+                  </goals>
+                  <configuration>
+                    <target name="delombok-test-sources">
+                      <property name="maven.classpath" refid="maven.test.classpath"/>
+                      <mkdir dir="${lombok.testOutputDirectory}"/>
+                      <java classname="lombok.launch.Main" fork="true">
+                        <classpath>
+                          <!--suppress MavenModelInspection, MybatisXMapperXmlInspection -->
+                          <pathelement path="${maven.classpath}"/>
+                          <pathelement path="${lombok.outputDirectory}"/>
+                          <!--<pathelement path="${assertj.targetDir}"/>-->
+                        </classpath>
+                        <arg value="delombok"/>
+                        <arg value="${lombok.testSourceDirectory}"/>
+
+                        <!-- @formatter:off -->
+                        <arg value="-f"/><arg value="indent:2"/>
+                        <arg value="-f"/><arg value="finalParams:skip"/>
+                        <arg value="-f"/><arg value="pretty"/>
+                        <arg value="-d"/><arg value="${lombok.testOutputDirectory}"/>
+                        <!-- @formatter:on -->
+                      </java>
+                    </target>
+                  </configuration>
+                </execution>
+                <execution>
+                  <id>delombok-cleaning:verify:run</id>
+                  <phase>verify</phase>
+                  <goals>
+                    <goal>run</goal>
+                  </goals>
+                  <configuration>
+                    <target name="cleanup-openapi-dir">
+                      <delete dir="${lombok.outputDirectory}"/>
+                      <delete dir="${lombok.testOutputDirectory}"/>
+                    </target>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+        <plugins>
+          <plugin>
+            <artifactId>maven-source-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <modelVersion>4.0.0</modelVersion>
 </project>
