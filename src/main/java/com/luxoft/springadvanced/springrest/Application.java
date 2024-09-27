@@ -21,19 +21,19 @@ import java.util.Map;
 @Import(FlightBuilder.class)
 public class Application {
 
-    Flight flight;
-    Map<String, Country> countriesMap;
+  Flight flight;
+  Map<String, Country> countriesMap;
 
-    @Bean
-    CommandLineRunner configureRepository(CountryRepository countryRepository,
-                                          PassengerRepository passengerRepository) {
-        return __ -> {
-          countryRepository.saveAll(countriesMap.values());
-          passengerRepository.saveAll(flight.getPassengers());
-        };
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(Application.class, args);
+  }
 
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
+  @Bean
+  CommandLineRunner configureRepository(CountryRepository countryRepository,
+                                        PassengerRepository passengerRepository) {
+    return __ -> {
+      countryRepository.saveAll(countriesMap.values());
+      passengerRepository.saveAll(flight.getPassengers());
+    };
+  }
 }

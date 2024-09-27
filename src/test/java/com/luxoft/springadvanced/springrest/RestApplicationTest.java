@@ -2,6 +2,7 @@ package com.luxoft.springadvanced.springrest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luxoft.springadvanced.springrest.beans.FlightBuilder;
+import com.luxoft.springadvanced.springrest.controller.CountryController;
 import com.luxoft.springadvanced.springrest.dao.CountryRepository;
 import com.luxoft.springadvanced.springrest.dao.PassengerRepository;
 import com.luxoft.springadvanced.springrest.dto.Flight;
@@ -12,6 +13,7 @@ import jakarta.servlet.ServletException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -134,4 +136,17 @@ class RestApplicationTest {
         verify(passengerRepository, times(1)).save(passenger);
     }
 
+  @Test
+  @SneakyThrows
+  @DisplayName("NK country creation fails")
+  void nKCountryCreationFailsTest() {
+    // given
+    val country = new Country("NK", "North Korea");
+
+    //when
+    mvc.perform(post(CountryController.BASE_URI)
+                    .content(new ObjectMapper().writeValueAsString(country))
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
+       .andExpect(status().isUnprocessableEntity());
+  }
 }
