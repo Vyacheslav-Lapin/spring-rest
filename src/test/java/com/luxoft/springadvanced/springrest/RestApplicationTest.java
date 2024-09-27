@@ -2,7 +2,6 @@ package com.luxoft.springadvanced.springrest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luxoft.springadvanced.springrest.beans.FlightBuilder;
-import com.luxoft.springadvanced.springrest.dao.CountryRepository;
 import com.luxoft.springadvanced.springrest.dao.PassengerRepository;
 import com.luxoft.springadvanced.springrest.dto.Flight;
 import com.luxoft.springadvanced.springrest.exception.PassengerNotFoundException;
@@ -52,19 +51,13 @@ class RestApplicationTest {
     @MockBean
     PassengerRepository passengerRepository;
 
-    @MockBean
-    CountryRepository countryRepository;
-
     @Test
     @SneakyThrows
     void testGetAllCountries() {
-        when(countryRepository.findAll()).thenReturn(new ArrayList<>(countriesMap.values()));
         mvc.perform(get("/countries"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(3)));
-
-        verify(countryRepository, times(1)).findAll();
+                .andExpect(content().contentType("application/hal+json"))
+                .andExpect(jsonPath("$._embedded.countries", hasSize(3)));
     }
 
     @Test
@@ -147,7 +140,6 @@ class RestApplicationTest {
     mvc.perform(post("/countries")
                     .content(new ObjectMapper().writeValueAsString(country))
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
-       .andExpect(status().isInternalServerError());
-//       .andExpect(status().isUnprocessableEntity());
+       .andExpect(status().isUnprocessableEntity());
   }
 }
