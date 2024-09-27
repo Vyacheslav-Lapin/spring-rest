@@ -102,8 +102,8 @@ class RestApplicationTest {
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name", is("Peter Michelsen")))
-                .andExpect(jsonPath("$.country.codeName", is("USA")))
-                .andExpect(jsonPath("$.country.name", is("US")))
+                .andExpect(jsonPath("$.country.codeName", is("US")))
+                .andExpect(jsonPath("$.country.name", is("USA")))
                 .andExpect(jsonPath("$.registered", is(Boolean.FALSE)));
 
         verify(passengerRepository, times(1)).save(passenger);

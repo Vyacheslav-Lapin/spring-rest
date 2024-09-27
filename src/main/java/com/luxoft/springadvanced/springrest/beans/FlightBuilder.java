@@ -35,9 +35,9 @@ public class FlightBuilder {
 
     countriesMap = reader.lines()
                          .map(line -> line.split(";"))
-                         .map(countriesString -> new Country(countriesString[0].trim(),
-                                                             countriesString[1].trim()))
-                         .collect(Collectors.toMap(Country::getName, Function.identity()));
+                         .map(countriesString -> new Country(countriesString[1].trim(),
+                                                             countriesString[0].trim()))
+                         .collect(Collectors.toMap(Country::getCodeName, Function.identity()));
   }
 
   @Bean
